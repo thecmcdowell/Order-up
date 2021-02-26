@@ -17,11 +17,8 @@ const orderReducer = (state = initState, action: Action) => {
     case types.ADD_TO_CART:
       return [...state, action.payload];
     case types.REMOVE_FROM_CART:
-      console.log("actions", action.payload.title);
-      let updated = state.filter((item) => {
-        item.title != action.payload.title;
-      });
-      return state;
+      let updated = state.filter((item) => item.title !== action.payload.title);
+      return updated;
     case types.UPDATE_CART:
       return state;
     default:
