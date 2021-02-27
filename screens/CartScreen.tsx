@@ -23,10 +23,9 @@ const CartScreen = () => {
   const currentCart = useSelector((state) => state.cart);
   const grandTotal = useSelector((state) => state.grandTotal);
   const [updatedItem, setUpdatedItem] = useState({});
-  const [updatedQuatantity, setUpdatedQuantity] = useState();
   const [currentSelection, setCurrentSelection] = useState({});
   const [editSelectionVisible, setEditSelectionVisible] = useState(false);
-
+  console.log("current cart", currentCart);
   useEffect(() => {
     const total = GrandTotalMath(currentCart);
     dispatch(setGrandTotal(total));
@@ -81,12 +80,8 @@ const CartScreen = () => {
 
   return (
     <View style={styles.container}>
-      {currentCart === [] ? (
-        <Text>Add some stuff to your cart!</Text>
-      ) : (
-        <FlatList data={currentCart} renderItem={listItem} />
-      )}
-      <CurrentTotal total={grandTotal} />
+      <FlatList data={currentCart} renderItem={listItem} />
+      {grandTotal !== 0 && <CurrentTotal total={grandTotal} />}
       <Modal
         animationType="slide"
         visible={editSelectionVisible}
@@ -95,7 +90,7 @@ const CartScreen = () => {
         <View style={styles.container}>
           <View style={styles.modal}>
             <Text>Edit Qty of Your {currentSelection.title}</Text>
-            <View style={{ flexDirection: "row" }}>
+            <View style={{ padding: "5%" }}>
               <TextInput
                 value={currentSelection.quantity}
                 onChangeText={(text) => handleTextInput(text)}

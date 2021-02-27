@@ -114,8 +114,8 @@ export default function Home() {
                 keyboardType="number-pad"
                 value={quantity}
                 onChangeText={(text) => handleTextInput(text)}
+                placeholder="qty"
               />
-              <Text>quantity?</Text>
             </View>
             <Button
               disabled={addToCartDisabled}
