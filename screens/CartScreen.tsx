@@ -28,7 +28,7 @@ const CartScreen = () => {
   const [editSelectionVisible, setEditSelectionVisible] = useState(false);
 
   useEffect(() => {
-    let total = GrandTotalMath(currentCart);
+    const total = GrandTotalMath(currentCart);
     dispatch(setGrandTotal(total));
   });
 
@@ -47,9 +47,9 @@ const CartScreen = () => {
     setEditSelectionVisible(false);
   };
 
-  const handleTextInput = (text: String) => {
+  const handleTextInput = (text: string) => {
     const { price } = currentSelection;
-    let newTotal = text * price;
+    const newTotal = text * price;
     const updated = {
       ...currentSelection,
       quantity: text,

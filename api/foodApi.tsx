@@ -1,7 +1,6 @@
 // NOTE: this is because normally there would be API stuff
-import response from "./mockData.js";
 
-let mockData = [
+const mockData = [
   {
     title: "Jacks Everything Burger",
     price: 5.99,

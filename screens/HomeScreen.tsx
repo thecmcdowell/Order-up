@@ -14,14 +14,14 @@ import { addToCart, setGrandTotal } from "../state/ducks/ordering/actions";
 import getFood from "../api/foodApi";
 import { Text, View } from "../components/Themed";
 interface foodItem {
-  index: Number;
+  index: number;
   item: foodItemDetail;
 }
 
 interface foodItemDetail {
-  title: String;
-  price: Number;
-  description: String;
+  title: string;
+  price: number;
+  description: string;
 }
 
 export default function Home() {
@@ -33,12 +33,12 @@ export default function Home() {
   const [addToCartDisabled, setAddToCartDisabled] = useState(true);
   const state = useSelector((state) => state);
   useEffect(() => {
-    let items = getFood();
+    const items = getFood();
     setFoodItems(items);
   }, []);
 
   useEffect(() => {
-    let total = GrandTotalMath(state.cart);
+    const total = GrandTotalMath(state.cart);
     dispatch(setGrandTotal(total));
   }, [state.cart]);
 
@@ -49,8 +49,8 @@ export default function Home() {
 
   const handleAddToCart = () => {
     const { title, description, price } = selectedItem;
-    let totalPrice = quantity * price;
-    let cartItem = {
+    const totalPrice = quantity * price;
+    const cartItem = {
       title: title,
       description: description,
       price: price,
@@ -82,7 +82,7 @@ export default function Home() {
     );
   };
 
-  const handleTextInput = (text: String) => {
+  const handleTextInput = (text: string) => {
     setQuantity(text);
     if (!text || text === "0") {
       setAddToCartDisabled(true);

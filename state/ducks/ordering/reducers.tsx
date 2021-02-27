@@ -1,13 +1,13 @@
 import * as types from "./types";
 
 interface Action {
-  type: String;
+  type: string;
   payload: {
-    title: String;
-    price: Number;
-    description: String;
+    title: string;
+    price: number;
+    description: string;
     quantity: number;
-    totalPrice: Number;
+    totalPrice: number;
   };
 }
 
@@ -26,7 +26,7 @@ const orderReducer = (state = initState, action: Action) => {
     case types.ADD_TO_CART:
       return { ...state, cart: [...state.cart, action.payload] };
     case types.REMOVE_FROM_CART:
-      let updated = state.cart.filter(
+      const updated = state.cart.filter(
         (item) => item.title !== action.payload.title
       );
       return {
@@ -34,7 +34,7 @@ const orderReducer = (state = initState, action: Action) => {
         cart: updated,
       };
     case types.UPDATE_CART:
-      let updatedCart = state.cart.map((item) =>
+      const updatedCart = state.cart.map((item) =>
         item.title === action.payload.title ? action.payload : item
       );
       return {

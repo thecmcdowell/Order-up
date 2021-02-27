@@ -1,9 +1,9 @@
 import * as types from "./types";
 
 interface Item {
-  title: String;
-  price: Number;
-  description: String;
+  title: string;
+  price: number;
+  description: string;
   quantity: number;
 }
 export const addToCart = (item: Item) => ({
@@ -21,7 +21,7 @@ export const updateCart = (item: Item) => ({
   payload: item,
 });
 
-export const setGrandTotal = (grandTotal: Number) => ({
+export const setGrandTotal = (grandTotal: number) => ({
   type: types.SET_GRAND_TOTAL,
   payload: grandTotal,
 });
