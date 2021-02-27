@@ -93,7 +93,11 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      <FlatList data={foodItems} renderItem={listItem} />
+      <FlatList
+        data={foodItems}
+        renderItem={listItem}
+        keyExtractor={(item, index) => index.toString()}
+      />
       {state.cart.length !== 0 && <CurrentTotal total={state.grandTotal} />}
       <Modal
         animationType="slide"
