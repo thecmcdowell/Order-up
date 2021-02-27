@@ -92,7 +92,11 @@ const CartScreen = () => {
 
   return (
     <View style={styles.container}>
-      <FlatList data={currentCart} renderItem={listItem} />
+      <FlatList
+        data={currentCart}
+        renderItem={listItem}
+        keyExtractor={(item, index) => index.toString()}
+      />
       {grandTotal !== 0 && <CurrentTotal total={grandTotal} />}
       <Modal
         animationType="slide"
