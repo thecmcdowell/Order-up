@@ -27,7 +27,7 @@ interface foodItemDetail {
 export default function Home() {
   const dispatch = useDispatch();
   const [foodItems, setFoodItems] = useState([]);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
   const [addToCartCounterVisible, setAddToCartCounterVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState({});
   const [addToCartDisabled, setAddToCartDisabled] = useState(true);

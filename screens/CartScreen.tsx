@@ -7,6 +7,7 @@ import {
   Button,
   TextInput,
   Modal,
+  Alert,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { Text, View } from "../components/Themed";
@@ -41,9 +42,20 @@ const CartScreen = () => {
     setEditSelectionVisible(false);
   };
 
+  const dispatchDelete = () => {
+    dispatch(deleteItem(currentSelection)), setEditSelectionVisible(false);
+  };
+
   const handleDelete = () => {
-    dispatch(deleteItem(currentSelection));
-    setEditSelectionVisible(false);
+    Alert.alert(
+      "Are You Sure?",
+      "Are you sure you want to delete this order",
+      [
+        { text: "Delete", onPress: () => dispatchDelete() },
+        { text: "cancel", style: "cancel" },
+      ],
+      { cancelable: true }
+    );
   };
 
   const handleTextInput = (text: string) => {
@@ -101,9 +113,19 @@ const CartScreen = () => {
                   padding: 5,
                 }}
               />
-              <Button title="Update" onPress={handleUpdatePress} />
+              <Button title="Update" onPress={() => handleUpdatePress()} />
             </View>
-            <Button color="#ff0000" title="Delete" onPress={handleDelete} />
+            <View style={{ flexDirection: "row" }}>
+              <Button
+                title="Cancel"
+                onPress={() => setEditSelectionVisible(false)}
+              />
+              <Button
+                color="#ff0000"
+                title="Delete"
+                onPress={() => handleDelete()}
+              />
+            </View>
           </View>
         </View>
       </Modal>
