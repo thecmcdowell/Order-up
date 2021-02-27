@@ -24,7 +24,7 @@ export default function BottomTabNavigator() {
         component={HomeNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name="ios-code" color={color} />
+            <TabBarIcon name="md-restaurant" color={color} />
           ),
         }}
       />
@@ -33,7 +33,7 @@ export default function BottomTabNavigator() {
         component={CartNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name="ios-code" color={color} />
+            <TabBarIcon name="md-cart" color={color} />
           ),
         }}
       />
