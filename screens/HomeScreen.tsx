@@ -1,4 +1,3 @@
-// @TODO this needs to have a modal instead of a locked view
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
@@ -6,9 +5,12 @@ import {
   TouchableOpacity,
   TextInput,
   Button,
+  Modal,
 } from "react-native";
+import GrandTotalMath from "../helperFunctions/GrandTotal";
+import CurrentTotal from "../components/CurrentTotal";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "../state/ducks/ordering/actions";
+import { addToCart, setGrandTotal } from "../state/ducks/ordering/actions";
 import getFood from "../api/foodApi";
 import { Text, View } from "../components/Themed";
 interface foodItem {
@@ -25,14 +27,20 @@ interface foodItemDetail {
 export default function Home() {
   const dispatch = useDispatch();
   const [foodItems, setFoodItems] = useState([]);
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [addToCartCounterVisible, setAddToCartCounterVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState({});
-  const cartItems = useSelector((state) => state);
+  const [addToCartDisabled, setAddToCartDisabled] = useState(true);
+  const state = useSelector((state) => state);
   useEffect(() => {
     let items = getFood();
     setFoodItems(items);
   }, []);
+
+  useEffect(() => {
+    let total = GrandTotalMath(state.cart);
+    dispatch(setGrandTotal(total));
+  }, [state.cart]);
 
   const handleItemPress = (item: foodItemDetail) => {
     setAddToCartCounterVisible(!addToCartCounterVisible);
@@ -40,13 +48,18 @@ export default function Home() {
   };
 
   const handleAddToCart = () => {
+    const { title, description, price } = selectedItem;
+    let totalPrice = quantity * price;
     let cartItem = {
-      title: selectedItem.title,
-      description: selectedItem.description,
-      price: selectedItem.price,
+      title: title,
+      description: description,
+      price: price,
       quantity: quantity,
+      totalPrice: totalPrice,
     };
     dispatch(addToCart(cartItem));
+    setAddToCartCounterVisible(false);
+    setQuantity(1);
   };
 
   const listItem = (foodItem: foodItem) => {
@@ -63,35 +76,59 @@ export default function Home() {
           <Text>{item.description}</Text>
         </View>
         <View style={{ alignContent: "flex-end" }}>
-          <Text>{item.price}</Text>
+          <Text>${item.price}</Text>
         </View>
       </TouchableOpacity>
     );
   };
 
+  const handleTextInput = (text: String) => {
+    setQuantity(text);
+    if (!text || text === "0") {
+      setAddToCartDisabled(true);
+    } else {
+      setAddToCartDisabled(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <FlatList data={foodItems} renderItem={listItem} />
-      <View>
-        {addToCartCounterVisible && (
-          <View
-            style={{
-              justifyContent: "center",
-              borderWidth: 0.5,
-              borderColor: "blue",
-            }}
-          >
-            <Text>Add To Cart</Text>
-            <Text>quantity?</Text>
-            <TextInput
-              keyboardType="number-pad"
-              value={quantity}
-              onChangeText={(text) => setQuantity(text)}
+      {state.cart.length !== 0 && <CurrentTotal total={state.grandTotal} />}
+      <Modal
+        animationType="slide"
+        visible={addToCartCounterVisible}
+        transparent={true}
+      >
+        <View style={styles.container}>
+          <View style={styles.modal}>
+            <Text>Add {selectedItem.title} To Cart</Text>
+            <View style={{ flexDirection: "row", padding: 30 }}>
+              <TextInput
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 0.25,
+                  minWidth: "20%",
+                  padding: 5,
+                }}
+                keyboardType="number-pad"
+                value={quantity}
+                onChangeText={(text) => handleTextInput(text)}
+              />
+              <Text>quantity?</Text>
+            </View>
+            <Button
+              disabled={addToCartDisabled}
+              title="Add to Cart"
+              onPress={() => handleAddToCart()}
             />
-            <Button title="Add to Cart" onPress={handleAddToCart} />
+            <Button
+              title="Cancel"
+              onPress={() => setAddToCartCounterVisible(false)}
+            />
           </View>
-        )}
-      </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -100,8 +137,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
+    justifyContent: "center",
   },
-  addToCartCard: {},
+
+  modal: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    justifyContent: "center",
+  },
+
   listItem: {
     flex: 1,
     flexDirection: "row",

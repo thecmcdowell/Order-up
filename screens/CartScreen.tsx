@@ -1,38 +1,67 @@
 // @TODO move the list item into a seperate container
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
   Button,
   TextInput,
+  Modal,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { Text, View } from "../components/Themed";
-import { deleteItem } from "../state/ducks/ordering/actions";
+import GrandTotalMath from "../helperFunctions/GrandTotal";
+import CurrentTotal from "../components/CurrentTotal";
+import {
+  deleteItem,
+  updateCart,
+  setGrandTotal,
+} from "../state/ducks/ordering/actions";
 
 const CartScreen = () => {
   const dispatch = useDispatch();
-  const currentCart = useSelector((state) => state);
+  const currentCart = useSelector((state) => state.cart);
+  const grandTotal = useSelector((state) => state.grandTotal);
+  const [updatedItem, setUpdatedItem] = useState({});
+  const [updatedQuatantity, setUpdatedQuantity] = useState();
   const [currentSelection, setCurrentSelection] = useState({});
-  const [editSelectionVisible, setEditSelectionVisible] = useState(true);
+  const [editSelectionVisible, setEditSelectionVisible] = useState(false);
 
-  console.log("current", currentCart);
+  useEffect(() => {
+    let total = GrandTotalMath(currentCart);
+    dispatch(setGrandTotal(total));
+  });
 
   const handleItemPress = (item) => {
     setCurrentSelection(item);
     setEditSelectionVisible(!editSelectionVisible);
   };
 
-  const handleDelete = () => {
-    console.log("foo");
-    dispatch(deleteItem(currentSelection));
+  const handleUpdatePress = () => {
+    dispatch(updateCart(updatedItem));
+    setEditSelectionVisible(false);
   };
 
-  const listItem = (foodItem: foodItem) => {
+  const handleDelete = () => {
+    dispatch(deleteItem(currentSelection));
+    setEditSelectionVisible(false);
+  };
+
+  const handleTextInput = (text: String) => {
+    const { price } = currentSelection;
+    let newTotal = text * price;
+    const updated = {
+      ...currentSelection,
+      quantity: text,
+      totalPrice: newTotal,
+    };
+    setCurrentSelection({ ...currentSelection, quantity: text });
+
+    setUpdatedItem(updated);
+  };
+
+  const listItem = (foodItem) => {
     const { item } = foodItem;
-    // don't render the errors!
-    if (!item.title) return null;
     return (
       <TouchableOpacity
         onPress={() => handleItemPress(item)}
@@ -43,11 +72,13 @@ const CartScreen = () => {
           <Text>{item.description}</Text>
         </View>
         <View style={{ alignContent: "flex-end" }}>
-          <Text>{item.price}</Text>
+          <Text>${item.totalPrice}</Text>
+          <Text>qty: {item.quantity}</Text>
         </View>
       </TouchableOpacity>
     );
   };
+
   return (
     <View style={styles.container}>
       {currentCart === [] ? (
@@ -55,16 +86,32 @@ const CartScreen = () => {
       ) : (
         <FlatList data={currentCart} renderItem={listItem} />
       )}
-      {editSelectionVisible && (
-        <View style={{ alignItems: "center" }}>
-          <Text>Edit Selection</Text>
-          <View style={{ flexDirection: "row" }}>
-            {/* <TextInput value={currentSelection.quantity} onChangeText={text => }/> */}
-            <Button title="Delete" onPress={handleDelete} />
-            <Button title="Update" />
+      <CurrentTotal total={grandTotal} />
+      <Modal
+        animationType="slide"
+        visible={editSelectionVisible}
+        transparent={true}
+      >
+        <View style={styles.container}>
+          <View style={styles.modal}>
+            <Text>Edit Qty of Your {currentSelection.title}</Text>
+            <View style={{ flexDirection: "row" }}>
+              <TextInput
+                value={currentSelection.quantity}
+                onChangeText={(text) => handleTextInput(text)}
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 0.25,
+                  minWidth: "20%",
+                  padding: 5,
+                }}
+              />
+              <Button title="Update" onPress={handleUpdatePress} />
+            </View>
+            <Button color="#ff0000" title="Delete" onPress={handleDelete} />
           </View>
         </View>
-      )}
+      </Modal>
     </View>
   );
 };
@@ -78,6 +125,22 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
+  },
+  modal: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    justifyContent: "center",
   },
   listItem: {
     flex: 1,
