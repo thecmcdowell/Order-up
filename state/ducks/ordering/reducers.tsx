@@ -1,3 +1,5 @@
+// NOTE this is not the ideal way to handle deletion and updating. In theory you would want to make that based on a UID (EG a product UID), but for this exercise a string will work
+// however, this means that if there are two objects with the same title that both will be updated or removed.
 import * as types from "./types";
 
 interface Action {
